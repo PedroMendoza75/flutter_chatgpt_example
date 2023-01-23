@@ -1,9 +1,13 @@
+// ignore_for_file: avoid_print
+
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:learning/constant.dart';
+import 'speech_dialog.dart';
+import 'constant.dart';
 import 'model.dart';
+import 'tts.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,8 +18,13 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: ChatPage(),
+    return MaterialApp(
+      title: 'Speech to I.A.',
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: const ChatPage(),
       debugShowCheckedModeBanner: false,
     );
   }
@@ -32,7 +41,7 @@ class ChatPage extends StatefulWidget {
 }
 
 Future<String> generateResponse(String prompt) async {
-  final apiKey = apiSecretKey;
+  const apiKey = apiSecretKey;
 
   var url = Uri.https("api.openai.com", "/v1/completions");
   final response = await http.post(
@@ -58,15 +67,55 @@ Future<String> generateResponse(String prompt) async {
 }
 
 class _ChatPageState extends State<ChatPage> {
-  final _textController = TextEditingController();
+  final _textSubmitController = TextEditingController();
   final _scrollController = ScrollController();
   final List<ChatMessage> _messages = [];
   late bool isLoading;
+  late bool speechVisibity = false;
+  late bool configVisibility = false;
+  void submitter(String txt) {
+    setState(
+      () {
+        _messages.add(
+          ChatMessage(
+            text: txt,
+            chatMessageType: ChatMessageType.user,
+          ),
+        );
+        isLoading = true;
+      },
+    );
+
+    var input = txt;
+    _textSubmitController.clear();
+
+    Future.delayed(const Duration(milliseconds: 50)).then((_) => _scrollDown());
+
+    generateResponse(input).then((value) {
+      setState(() {
+        isLoading = false;
+        _messages.add(
+          ChatMessage(
+            text: utf8.decode(value.runes.toList()),
+            chatMessageType: ChatMessageType.bot,
+          ),
+        );
+      });
+    });
+    _textSubmitController.clear();
+    Future.delayed(const Duration(milliseconds: 50)).then((_) => _scrollDown());
+  }
 
   @override
   void initState() {
     super.initState();
     isLoading = false;
+  }
+
+  void ttsUpdateMe() {
+    setState(() {
+      // tts indications change
+    });
   }
 
   @override
@@ -77,7 +126,7 @@ class _ChatPageState extends State<ChatPage> {
         title: const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
-            "OpenAI's ChatGPT Flutter Example \n@ngjunya",
+            "OpenAI's ChatGPT",
             maxLines: 2,
             textAlign: TextAlign.center,
           ),
@@ -85,37 +134,76 @@ class _ChatPageState extends State<ChatPage> {
         backgroundColor: botBackgroundColor,
       ),
       backgroundColor: backgroundColor,
-      body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: _buildList(),
-            ),
-            Visibility(
-              visible: isLoading,
-              child: const Padding(
-                padding: EdgeInsets.all(8.0),
-                child: CircularProgressIndicator(
-                  color: Colors.white,
+      body: Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                Expanded(
+                  child: _buildConversation(),
                 ),
-              ),
+                Visibility(
+                  visible: isLoading,
+                  child: const Padding(
+                    padding: EdgeInsets.all(8.0),
+                    child: CircularProgressIndicator(
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    children: [
+                      _buildTextEditInput(),
+                      _buildTextEditSubmit(_textSubmitController),
+                      _buildSpeechRecognitionSubmit(),
+                    ],
+                  ),
+                ),
+              ],
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  _buildInput(),
-                  _buildSubmit(),
-                ],
-              ),
+          ),
+          Visibility(
+            visible: speechVisibity,
+            child: SpeechDialog(
+              submitter: submitter,
+              onDismiss: () {
+                setState(() {
+                  speechVisibity = false;
+                });
+              },
             ),
-          ],
-        ),
+          ),
+          Visibility(
+            visible: configVisibility,
+            child: TtsConfig(
+              ownerCallback: ttsUpdateMe,
+              onDismiss: () {
+                setState(() {
+                  speechVisibity = false;
+                });
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
 
-  Widget _buildSubmit() {
+  FloatingActionButton _buildSpeechRecognitionSubmit() {
+    return FloatingActionButton(
+      onPressed: () {
+        setState(() {
+          speechVisibity = true;
+        });
+      },
+      tooltip: 'Listen',
+      child: const Icon(Icons.mic),
+    );
+  }
+
+  Widget _buildTextEditSubmit(TextEditingController tec) {
     return Visibility(
       visible: !isLoading,
       child: Container(
@@ -126,47 +214,19 @@ class _ChatPageState extends State<ChatPage> {
             color: Color.fromRGBO(142, 142, 160, 1),
           ),
           onPressed: () async {
-            setState(
-              () {
-                _messages.add(
-                  ChatMessage(
-                    text: _textController.text,
-                    chatMessageType: ChatMessageType.user,
-                  ),
-                );
-                isLoading = true;
-              },
-            );
-            var input = _textController.text;
-            _textController.clear();
-            Future.delayed(const Duration(milliseconds: 50))
-                .then((_) => _scrollDown());
-            generateResponse(input).then((value) {
-              setState(() {
-                isLoading = false;
-                _messages.add(
-                  ChatMessage(
-                    text: value,
-                    chatMessageType: ChatMessageType.bot,
-                  ),
-                );
-              });
-            });
-            _textController.clear();
-            Future.delayed(const Duration(milliseconds: 50))
-                .then((_) => _scrollDown());
+            submitter(tec.text);
           },
         ),
       ),
     );
   }
 
-  Expanded _buildInput() {
+  Expanded _buildTextEditInput() {
     return Expanded(
       child: TextField(
         textCapitalization: TextCapitalization.sentences,
         style: const TextStyle(color: Colors.white),
-        controller: _textController,
+        controller: _textSubmitController,
         decoration: const InputDecoration(
           fillColor: botBackgroundColor,
           filled: true,
@@ -180,7 +240,7 @@ class _ChatPageState extends State<ChatPage> {
     );
   }
 
-  ListView _buildList() {
+  ListView _buildConversation() {
     return ListView.builder(
       controller: _scrollController,
       itemCount: _messages.length,
@@ -227,9 +287,9 @@ class ChatMessageWidget extends StatelessWidget {
                   child: CircleAvatar(
                     backgroundColor: const Color.fromRGBO(16, 163, 127, 1),
                     child: Image.asset(
-                      'assets/bot.png',
-                      color: Colors.white,
-                      scale: 1.5,
+                      'assets/chatbot-icon-16.jpg',
+                      color: const Color.fromARGB(255, 245, 159, 159),
+                      scale: 0.2,
                     ),
                   ),
                 )
@@ -252,6 +312,15 @@ class ChatMessageWidget extends StatelessWidget {
                   ),
                   child: Text(
                     text,
+                    // If listening is active show the recognized words
+                    // _speechToText.isListening ? _text : text,
+                    // If listening isn't active but could be tell the user
+                    // how to start it, otherwise indicate that speech
+                    // recognition is not yet ready or not supported on
+                    // the target device
+                    // : _speechEnabled
+                    //     ? 'Tap the microphone to start listening...'
+                    //     : 'Speech not available',
                     style: Theme.of(context)
                         .textTheme
                         .bodyLarge
