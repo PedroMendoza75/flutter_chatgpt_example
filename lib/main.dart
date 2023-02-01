@@ -7,17 +7,22 @@ import 'package:http/http.dart' as http;
 import 'speech_dialog.dart';
 import 'constant.dart';
 import 'model.dart';
+import 'config_tts.dart';
 import 'tts.dart';
 
 void main() {
   runApp(const MyApp());
 }
 
+final ttsKey = GlobalKey<TtsConfigState>();
+
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    ttsWrapper = TtsWrapper();
+    ttsWrapper.initTts();
     return MaterialApp(
       title: 'Speech to I.A.',
       theme: ThemeData(
@@ -94,12 +99,14 @@ class _ChatPageState extends State<ChatPage> {
     generateResponse(input).then((value) {
       setState(() {
         isLoading = false;
+        final txt = utf8.decode(value.runes.toList());
         _messages.add(
           ChatMessage(
-            text: utf8.decode(value.runes.toList()),
+            text: txt,
             chatMessageType: ChatMessageType.bot,
           ),
         );
+        ttsWrapper.speak(txt);
       });
     });
     _textSubmitController.clear();
@@ -132,6 +139,19 @@ class _ChatPageState extends State<ChatPage> {
           ),
         ),
         backgroundColor: botBackgroundColor,
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.settings,
+              color: Color.fromRGBO(142, 142, 160, 1),
+            ),
+            onPressed: () async {
+              setState(() {
+                configVisibility = true;
+              });
+            },
+          ),
+        ],
       ),
       backgroundColor: backgroundColor,
       body: Stack(
@@ -178,10 +198,11 @@ class _ChatPageState extends State<ChatPage> {
           Visibility(
             visible: configVisibility,
             child: TtsConfig(
+              key: ttsKey,
               ownerCallback: ttsUpdateMe,
               onDismiss: () {
                 setState(() {
-                  speechVisibity = false;
+                  configVisibility = false;
                 });
               },
             ),
