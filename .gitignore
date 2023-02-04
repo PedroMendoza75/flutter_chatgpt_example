@@ -42,3 +42,13 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+windows/*
+.metadata
+android/app/src/main/kotlin/com/example/flutter_chatgpt_example/MainActivity.kt
+
+lib/constant.dart
+windows/runner/main.cpp
+windows/runner/Runner.rc
+windows/runner/win32_window.cpp
+windows/runner/win32_window.h
+windows/CMakeLists.txt
