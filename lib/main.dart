@@ -9,6 +9,10 @@ import 'constant.dart';
 import 'model.dart';
 import 'config_tts.dart';
 import 'tts.dart';
+import 'dart:io' show Platform;
+import 'package:logging/logging.dart';
+
+final log = Logger('SpeechToText');
 
 void main() {
   runApp(const MyApp());
@@ -78,6 +82,7 @@ class _ChatPageState extends State<ChatPage> {
   late bool isLoading;
   late bool speechVisibity = false;
   late bool configVisibility = false;
+  bool _speechEnabled = false;
   void submitter(String txt) {
     setState(
       () {
@@ -116,7 +121,12 @@ class _ChatPageState extends State<ChatPage> {
   @override
   void initState() {
     super.initState();
+    doSomeAsyncStuff();
     isLoading = false;
+  }
+
+  Future<void> doSomeAsyncStuff() async {
+    _speechEnabled = await SpeechUtils.isSpeechAvailable();
   }
 
   void ttsUpdateMe() {
@@ -213,6 +223,19 @@ class _ChatPageState extends State<ChatPage> {
   }
 
   FloatingActionButton _buildSpeechRecognitionSubmit() {
+    if (Platform.isWindows || !_speechEnabled) {
+      log.warning("The speech to text plugin is not supported on this System.");
+      return const FloatingActionButton(
+        backgroundColor: Colors.grey,
+        onPressed: null,
+        tooltip: 'Speech To Text Unavailable',
+        child: Icon(
+          Icons.mic_external_off_outlined,
+          color: Color.fromARGB(255, 82, 82, 82),
+        ),
+      );
+    }
+
     return FloatingActionButton(
       onPressed: () {
         setState(() {

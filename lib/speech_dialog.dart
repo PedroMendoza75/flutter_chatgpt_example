@@ -5,6 +5,37 @@ import 'package:highlight_text/highlight_text.dart';
 import 'package:flutter/material.dart';
 import 'package:speech_to_text/speech_to_text.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
+import 'package:speech_to_text/speech_recognition_error.dart';
+import 'package:permission_handler/permission_handler.dart';
+
+get errorListener => (SpeechRecognitionError error) {
+      print("Error: ${error.errorMsg} (${error.permanent})");
+    };
+
+get statusListener => (String status) => print('Speech status: $status');
+
+class SpeechUtils {
+  static Future<bool> isSpeechAvailable() async {
+    final speechToText = SpeechToText();
+    await speechToText.initialize(
+        onError: errorListener,
+        onStatus: statusListener,
+        debugLogging: true,
+        options: [SpeechToText.androidNoBluetooth]);
+    return speechToText.isAvailable;
+  }
+}
+
+Future<void> requestMicrophonePermission() async {
+  final status = await Permission.microphone.status;
+
+  if (status != PermissionStatus.granted) {
+    final result = await Permission.microphone.request();
+    if (result != PermissionStatus.granted) {
+      throw Exception('Microphone permission not granted');
+    }
+  }
+}
 
 class SpeechDialog extends StatefulWidget {
   final Function(String) submitter;
@@ -23,31 +54,22 @@ class SpeechDialogState extends State<SpeechDialog> {
   double confidence = 0;
   String speechedText = "Please don't be silly";
   String lastSpeech = '';
-  bool _speechEnabled = false;
+  // bool _speechEnabled = false;
 
   @override
   void initState() {
     super.initState();
+    requestMicrophonePermission();
     _initSpeech();
     isLoading = false;
   }
 
-  get errorListener => null;
-
-  get statusListener => null;
-
-  /// This has to happen only once per app
-  void _initSpeech() async {
-    _speechEnabled = await _speechToText.initialize(
-        //_speechEnabled
-        onError: errorListener,
-        onStatus: statusListener,
-        debugLogging: true,
-        options: [SpeechToText.androidNoBluetooth]);
+  Future<void> _initSpeech() async {
+    // _speechEnabled = await SpeechUtils.isSpeechAvailable();
     setState(() {
-      if (_speechEnabled) {
-        _toogleListening();
-      }
+      // if (_speechEnabled) {
+      _toogleListening();
+      // }
     });
   }
 
@@ -204,9 +226,9 @@ class SpeechDialogState extends State<SpeechDialog> {
         repeat: true,
         child: FloatingActionButton(
           onPressed: () {
-            if (_speechEnabled) {
-              _toogleListening();
-            }
+            // if (_speechEnabled) {
+            _toogleListening();
+            // }
           },
           child: Icon(isListening ? Icons.mic : Icons.mic_none),
         ),
