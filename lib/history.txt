@@ -1,0 +1,181 @@
+    1  sudo apt-get update
+    2  sudo docker run hello-world
+    3  sudo apt-get install -y     apt-transport-https     ca-certificates     curl     gnupg-agent     software-properties-common
+    4  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+    5  sudo apt-key fingerprint 0EBFCD88
+    6  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+    7  $(lsb_release -cs) \
+    8  stable"
+    9  sudo apt-get update
+   10  sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+   11  sudo docker run hello-world
+   12  wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+   13  sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+   14  wget https://developer.download.nvidia.com/compute/cuda/12.0.0/local_installers/cuda-repo-wsl-ubuntu-12-0-local_12.0.0-1_amd64.deb
+   15  sudo dpkg -i cuda-repo-wsl-ubuntu-12-0-local_12.0.0-1_amd64.deb
+   16  sudo cp /var/cuda-repo-wsl-ubuntu-12-0-local/cuda-*-keyring.gpg /usr/share/keyrings/
+   17  sudo apt-get update
+   18  sudo apt-get -y install cuda
+   19  sudo dockerd
+   20  distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+   21  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+   22  sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
+   23  sudo systemctl restart docker
+   24  sudo docker run --rm --gpus all nvidia/cuda:11.0.3-base-ubuntu20.04 nvidia-smi
+   25  sudo docker run --gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+   26  systemctl start docker
+   27  wsl --version
+   28  systemctl start docker
+   29  wsl --version
+   30  sudo docker run --gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+   31  wsl cat /proc/version
+   32  sudo apt-key del 7fa2af80
+   33  sudo apt-get -y install cuda
+   34  mkdir Dev
+   35  cd Dev/
+   36  git clone https://github.com/nvidia/cuda-samples
+   37  cd cuda-samples/Samples/1_Utilities/deviceQuery
+   38  make
+   39  ./deviceQuery
+   40  sudo service docker stop
+   41  sudo service docker start
+   42  docker run –gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+   43  docker
+   44  docker run –gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu\
+   45  docker run –-gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu
+   46  docker run –gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody --gpu
+   47  docker run –gpus 1 nvcr.io/nvidia/k8s/cuda-sample:nbody nbody --gpu
+   48  docker run nvcr.io/nvidia/k8s/cuda-sample:nbody nbody --gpu
+   49  sudo apt-get install -y nvidia-docker2
+   50  sudo service docker stop
+   51  sudo service docker start
+   52  docker run –gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+   53  docker run nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+   54  pwd
+   55  whoami
+   56  sudo apt update
+   57  sudo apt upgrade
+   58  sudo apt-get install -y     apt-transport-https     ca-certificates     curl     gnupg-agent     software-properties-common
+   59  sudo apt-key del 7fa2af80
+   60  curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+   61  sudo apt-key fingerprint 0EBFCD88
+   62  sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu \
+   63  $(lsb_release -cs) \
+   64  stable"
+   65  sudo apt-get update
+   66  sudo apt-get install -y docker-ce docker-ce-cli containerd.io
+   67  sudo docker run hello-world
+   68  sudo docker start
+   69  distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
+   70  curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
+   71  curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
+   72  sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
+   73  sudo systemctl restart docker
+   74  sudo docker run --rm --gpus all nvidia/cuda:11.0.3-base-ubuntu20.04 nvidia-smi
+   75  wget https://developer.download.nvidia.com/compute/cuda/repos/wsl-ubuntu/x86_64/cuda-wsl-ubuntu.pin
+   76  sudo mv cuda-wsl-ubuntu.pin /etc/apt/preferences.d/cuda-repository-pin-600
+   77  wget https://developer.download.nvidia.com/compute/cuda/12.0.0/local_installers/cuda-repo-wsl-ubuntu-12-0-local_12.0.0-1_amd64.deb
+   78  sudo dpkg -i cuda-repo-ubuntu2004-12-0-local_12.0.0-525.56.04-1_amd64.deb
+   79  ls
+   80  ls -la
+   81  rm cuda-repo-wsl-ubuntu-12-0-local_12.0.0-1_amd64.deb
+   82  ls -la
+   83  sudo apt-get -y install cuda
+   84  sudo service docker stop
+   85  sudo service docker start
+   86  sudo docker run --gpus all nvcr.io/nvidia/k8s/cuda-sample:nbody nbody -gpu -benchmark
+   87  docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:xx.xx-py3
+   88  sudo apt-get install -y docker nvidia-container-toolkit
+   89  docker run --gpus all -it --rm nvcr.io/nvidia/pytorch:23.01-py3
+   90  cd 072_pytorch_docker/
+   91  docker-compose build
+   92  docker-compose
+   93  docker-compose run
+   94  docker compose
+   95  docker compose build
+   96  docker compose run
+   97  cd 072_pytorch_docker/
+   98  ls
+   99  docker compose build
+  100  docker compose build test
+  101  docker compose build pytorch-ngc
+  102  docker compose run pytorch-ngc
+  103  docker build -t my_pytorch_jupyter:latest .
+  104  cd dev-repos/
+  105  cd blog/072_pytorch_docker/
+  106  ls
+  107  cat docker-compose.yaml
+  108  docker compose run pytorch-ngc
+  109  dpkg -l | grep -E '(nvidia|docker)'
+  110  cat /etc/docker/daemon.json
+  111  sudo systemctl daemon-reload
+  112  sudo systemctl restart docker
+  113  sudo systemctl daemon-reload
+  114  sudo systemctl restart docker
+  115  sudo systemctl daemon-reload
+  116  dpkg -l | grep -E '(nvidia|docker)'
+  117  docker compose run pytorch-ngc
+  118  cd 072_pytorch_docker/
+  119  docker compose run pytorch-ngc
+  120  clear
+  121  sudo systemctl daemon-reload
+  122  sudo visudo
+  123  sudo usermod -a -G docker $USER
+  124  exit
+  125  docker run hello-world
+  126  cd 072_pytorch_docker/
+  127  docker run hello-world
+  128  docker compose run pytorch-ngc
+  129  docker list
+  130  docker --help
+  131  docker images
+  132  docker compose run pytorch-ngc
+  133  docker build -t my_pytorch_jupyter:latest .
+  134  docker compose up
+  135  docker compose up pytorch-ngc
+  136  cd 072_pytorch_docker/
+  137  docker compose up pytorch-ngc
+  138  cd 072_pytorch_docker/
+  139  docker compose up pytorch-ngc
+  140  cd 072_pytorch_docker/
+  141  docker build -t my_pytorch_jupyter:latest .
+  142  docker image
+  143  docker image ls
+  144  docker compose up pytorch-ngc
+  145  docker ps
+  146  docker stop 37ca32dc06c0
+  147  docker ps
+  148  cd dev-repos/blog/072_pytorch_docker/
+  149  docker ps
+  150  docker stop 63d33557a660
+  151  docker build -t my_pytorch_jupyter:latest .
+  152  cd dev-repos/blog/072_pytorch_docker/
+  153  docker ps
+  154  docker compose up pytorch-ngc
+  155  docker build -t my_pytorch_jupyter:latest .
+  156  docker compose up pytorch-ngc
+  157  docker run hello-world
+  158  docker ps
+  159  docker stop 63d33557a660
+  160  cd dev-repos/blog/072_pytorch_docker/
+  161  docker compose up pytorch-ngc
+  162  cd dev-repos/blog/072_pytorch_docker/
+  163  docker compose up pytorch-ngc
+  164  ls 'la
+  165  ls -la
+  166  sudo chown pmendoza:pmendoza data/
+  167  ls -la
+  168  docker compose up pytorch-ngc
+  169  pytorch_ngc
+  170  cd dev-repos/blog/072_pytorch_docker/
+  171  docker ps
+  172  docker compose up pytorch-ngc
+  173  pytorch_ngc
+  174  docker compose up pytorch-ngc
+  175  pytorch_ngc
+  176  cd
+  177  pytorch_ngc
+  178  cd dev-repos/blog/072_pytorch_docker/
+  179  docker compose up pytorch-ngc
+  180  cd dev-repos/blog/072_pytorch_docker/
+  181  docker compose up pytorch-ngc
